@@ -24,6 +24,9 @@ from aiofiles.threadpool import sync_open, wrap
 
 _OBJECTS = []
 
+# Cache to avoid race conditions during teardown
+DEBUG = "AIOTEMPFILE_DEBUG" in os.environ
+
 
 @atexit.register
 def deterministic_destructor():
@@ -36,6 +39,11 @@ def deterministic_destructor():
     # Copy the list to allow modification while iterating
     for obj in _OBJECTS[:]:
         try:
+            if DEBUG:
+                print(
+                    "AIOTEMPFILE {name: %s, obj: %s, refcount: %d}"
+                    % (obj.name, obj, sys.getrefcount(obj))
+                )
             obj.close()
         except Exception:  # pylint: disable=broad-except
             exc_info = sys.exc_info()
