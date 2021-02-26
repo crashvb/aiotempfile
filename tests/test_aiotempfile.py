@@ -21,10 +21,9 @@ pytestmark = [pytest.mark.asyncio]
 LOGGER = logging.getLogger(__name__)
 
 
-async def close_file(file, path: Path):
+def assert_closed_and_clean(file, path: Path):
     """Closes a given file, ensures it's deleted."""
-    await file.close()
-    assert file.closed
+    assert file is None or file.closed
     assert not path.exists()
 
 
@@ -48,10 +47,24 @@ async def test_open_async_with():
     """Test that temporary files can be opened."""
     content_expected = b"This is test content."
 
+    _file = None
+    path = None
     async with aiotempfile() as file:
+        _file = file
         path = await write_to_file(file, content_expected)
         assert await read_file(file) == content_expected
-        await close_file(file, path)
+    assert_closed_and_clean(_file, path)
+
+
+async def test_open_await():
+    """Test that temporary files can be opened."""
+    content_expected = b"This is test content."
+
+    file = await aiotempfile()
+    path = await write_to_file(file, content_expected)
+    assert await read_file(file) == content_expected
+    file.close()
+    assert_closed_and_clean(file, path)
 
 
 async def test_open_context_manager__aenter__():
@@ -64,10 +77,10 @@ async def test_open_context_manager__aenter__():
 
     path = await write_to_file(file, content_expected)
     assert await read_file(file) == content_expected
-    await close_file(file, path)
 
     await aiofiles_context_manager.__aexit__(None, None, None)
     aiofiles_context_manager.close()
+    assert_closed_and_clean(file, path)
 
 
 async def test_open_context_manager__anext__():
@@ -80,9 +93,10 @@ async def test_open_context_manager__anext__():
     file = await aiofiles_context_manager.__anext__()
     path = await write_to_file(file, content_expected)
     assert await read_file(file) == content_expected
-    await close_file(file, path)
+    await file.close()
 
     aiofiles_context_manager.close()
+    assert_closed_and_clean(file, path)
 
 
 def test_open_context_manager__await__():
@@ -99,12 +113,14 @@ def test_open_context_manager__await__():
         file = yield from aiofiles_context_manager.__await__()
         path = yield from write_to_file(file, content_expected)
         content_acutal = yield from read_file(file)
+        file.close()
         assert content_acutal == content_expected
-        yield from close_file(file, path)
+        return path
 
-    yield from do_test()
+    path = yield from do_test()
 
     aiofiles_context_manager.close()
+    assert_closed_and_clean(aiofiles_context_manager._obj, path)
 
 
 async def test_open_context_manager__iter__():
@@ -117,9 +133,10 @@ async def test_open_context_manager__iter__():
     file = await aiofiles_context_manager.__iter__()
     path = await write_to_file(file, content_expected)
     assert await read_file(file) == content_expected
-    await close_file(file, path)
+    file.close()
 
     aiofiles_context_manager.close()
+    assert_closed_and_clean(file, path)
 
 
 async def test_open_context_manager_await():
@@ -132,6 +149,7 @@ async def test_open_context_manager_await():
     file = await aiofiles_context_manager
     path = await write_to_file(file, content_expected)
     assert await read_file(file) == content_expected
-    await close_file(file, path)
+    file.close()
 
     aiofiles_context_manager.close()
+    assert_closed_and_clean(file, path)

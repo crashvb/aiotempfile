@@ -83,10 +83,6 @@ def _open(file, *args, mode="r", loop=None, executor=None, **kwargs):
     file_descriptor = yield from loop.run_in_executor(executor, partial_function)
     obj = wrap(file_descriptor, loop=loop, executor=executor)
 
-    # DUCK PUNCH: __del__()
-    obj._original___del__ = getattr(obj, "__del__", None)
-    obj.__del__ = MethodType(duck_punch___del__, obj)
-
     # DUCK PUNCH: close()
     obj._original_close = getattr(obj, "close", None)
     obj.close = MethodType(duck_punch_close, obj)
@@ -96,35 +92,36 @@ def _open(file, *args, mode="r", loop=None, executor=None, **kwargs):
     return obj
 
 
-def duck_punch___del__(self):
-    """Ensure the file is deleted on __del__()."""
-    global _OBJECTS  # pylint: disable=global-statement
-    if self._original___del__:
-        self._original___del__()
-    try:
-        os.unlink(self._file.name)
-    except FileNotFoundError:
-        ...
-    finally:
-        try:
-            _OBJECTS.remove(self)
-        except ValueError:
-            ...
-
-
 def duck_punch_close(self):
     """Ensure the file is delete on close()."""
-    global _OBJECTS  # pylint: disable=global-statement
-    result = None
-    if self._original_close:
-        result = self._original_close()
+    # pylint: disable=bare-except,global-statement
+
+    path = None
     try:
-        os.unlink(self._file.name)
+        path = self._file.name
+    except:
+        ...
+
+    result = None
+    try:
+        result = self._original_close()
+    except:
+        ...
+
+    try:
+        self._file.close()
+        # self._file = None
+    except:
+        ...
+
+    try:
+        os.unlink(path)
     except FileNotFoundError:
         ...
-    finally:
-        try:
-            _OBJECTS.remove(self)
-        except ValueError:
-            ...
+
+    try:
+        global _OBJECTS
+        _OBJECTS.remove(self)
+    except ValueError:
+        ...
     return result

@@ -32,6 +32,8 @@ setup(
         "dev": [
             "black",
             "pylint",
+            "pytest",
+            "pytest-asyncio",
             "twine",
             "wheel",
         ]
