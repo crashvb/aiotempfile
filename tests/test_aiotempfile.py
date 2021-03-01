@@ -99,6 +99,7 @@ async def test_open_context_manager__anext__():
     assert_closed_and_clean(file, path)
 
 
+@pytest.mark.filterwarnings('ignore:.*use "async def" instead:DeprecationWarning')
 def test_open_context_manager__await__():
     # pylint: disable=not-an-iterable
     """Test that temporary files can be opened."""
