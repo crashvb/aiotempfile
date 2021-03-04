@@ -48,6 +48,6 @@ setup(
     packages=find_packages(),
     tests_require=["pytest", "pytest-asyncio"],
     test_suite="tests",
-    url="https://pypi.org/project/aiotempfile/",
+    url="https://github.com/crashvb/aiotempfile",
     version=find_version("aiotempfile", "__init__.py"),
 )

@@ -26,7 +26,29 @@ $ python -m pip install --editable .[dev]
 ```
 
 ## Usage
-TODO
+
+This implementation is a derivation of [aiofiles](https://pypi.org/project/aiofile/) and functions the same way.
+
+```python
+import aiotempfile
+async with aiotempfile.open() as file:
+    file.write(b"data")
+```
+
+If the context manager is not used, files will need be explicitly closed; otherwise, they will only be removed during the interepreter teardown.
+
+```python
+import aiotempfile
+file = await aiotempfile.open()
+file.write(b"data")
+file.close()
+```
+
+### Environment Variables
+
+| Variable | Default Value | Description |
+| ---------| ------------- | ----------- |
+| AIOTEMPFILE_DEBUG | | Adds additional debug logging.
 
 ## Development
 
