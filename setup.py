@@ -46,6 +46,10 @@ setup(
     long_description_content_type="text/markdown",
     name="aiotempfile",
     packages=find_packages(),
+    project_urls={
+        "Bug Reports": "https://github.com/crashvb/aiotempfile/issues",
+        "Source": "https://github.com/crashvb/aiotempfile",
+    },
     tests_require=["pytest", "pytest-asyncio"],
     test_suite="tests",
     url="https://github.com/crashvb/aiotempfile",
