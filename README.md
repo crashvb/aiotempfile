@@ -3,7 +3,7 @@
 [![pypi version](https://img.shields.io/pypi/v/aiotempfile.svg)](https://pypi.org/project/aiotempfile)
 [![build status](https://github.com/crashvb/aiotempfile/actions/workflows/main.yml/badge.svg)](https://github.com/crashvb/aiotempfile/actions)
 [![coverage status](https://coveralls.io/repos/github/crashvb/aiotempfile/badge.svg)](https://coveralls.io/github/crashvb/aiotempfile)
-[![python versions](https://img.shields.io/pypi/pyversions/aiotempfile.svg)](https://pypi.org/project/aiotempfile)
+[![python versions](https://img.shields.io/pypi/pyversions/aiotempfile.svg?logo=python&logoColor=FBE072)](https://pypi.org/project/aiotempfile)
 [![linting](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/PyCQA/pylint)
 [![code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![license](https://img.shields.io/github/license/crashvb/aiotempfile.svg)](https://github.com/crashvb/aiotempfile/blob/master/LICENSE.md)

@@ -38,6 +38,7 @@ setup(
             "pylint",
             "pytest",
             "pytest-asyncio",
+            "pytest-cov",
             "twine",
             "wheel",
         ]
@@ -54,7 +55,7 @@ setup(
         "Bug Reports": "https://github.com/crashvb/aiotempfile/issues",
         "Source": "https://github.com/crashvb/aiotempfile",
     },
-    tests_require=["pytest", "pytest-asyncio"],
+    tests_require=["pytest", "pytest-asyncio", "pytest-cov"],
     test_suite="tests",
     url="https://github.com/crashvb/aiotempfile",
     version=find_version("aiotempfile", "__init__.py"),

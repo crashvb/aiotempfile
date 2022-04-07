@@ -46,17 +46,16 @@ sign:
 	find dist -type f \( -iname "*.tar.gz" -o -iname "*.whl" \) -exec gpg --armor --detach-sig --local-user=$(keyid) --sign {} \;
 
 test:
-	python -m pytest --log-cli-level info $(args)
+	python -m pytest --cov=aiotempfile --cov-report= --log-cli-level info $(args)
 
 test-code:
-	python -m pylint --max-line-length=120 aiotempfile tests
+	python -m pylint --disable=W0511 --max-line-length=120 aiotempfile tests
 
-test-coverage:
-	coverage run --source=aiotempfile -m pytest --log-cli-level=info $(args)
+test-coverage: test
+	coverage report --fail-under=80
 
-test-coverage-verbose:
-	coverage run --source=aiotempfile -m pytest --log-cli-level=debug $(args)
-	coverage report
+test-coverage-verbose: test-verbose
+	coverage report --fail-under=80
 
 test-package: build
 	python -m venv $(tmpdir)
@@ -67,7 +66,7 @@ test-package: build
 	rm --force --recursive $(tmpdir)
 
 test-verbose:
-	python -m pytest -r sx --log-cli-level debug $(args)
+	python -m pytest -r sx --cov=aiotempfile --cov-report= --log-cli-level debug $(args)
 
 .venv:
 	python -m venv .venv
@@ -80,7 +79,7 @@ verify:
 	find dist -type f -iname "*.asc" -exec gpg --verify {} \;
 
 clean:
-	rm --force --recursive .eggs build dist *.egg-info
+	rm --force --recursive .eggs build dist .coverage *.egg-info
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name __pycache__ -delete
 
