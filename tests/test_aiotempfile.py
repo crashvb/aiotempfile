@@ -6,7 +6,6 @@
 
 import logging
 
-from asyncio import coroutine
 from pathlib import Path
 from typing import Any
 
@@ -97,31 +96,6 @@ async def test_open_context_manager__anext__():
 
     aiofiles_context_manager.close()
     assert_closed_and_clean(file, path)
-
-
-@pytest.mark.filterwarnings('ignore:.*use "async def" instead:DeprecationWarning')
-def test_open_context_manager__await__():
-    # pylint: disable=not-an-iterable
-    """Test that temporary files can be opened."""
-    content_expected = b"This is test content."
-
-    aiofiles_context_manager = aiotempfile()
-    assert isinstance(aiofiles_context_manager, AiofilesContextManager)
-
-    # https://stackoverflow.com/a/56114311/1201075
-    @coroutine
-    def do_test() -> Path:
-        file = yield from aiofiles_context_manager.__await__()
-        path = yield from write_to_file(file, content_expected)
-        content_acutal = yield from read_file(file)
-        file.close()
-        assert content_acutal == content_expected
-        return path
-
-    path = yield from do_test()
-
-    aiofiles_context_manager.close()
-    assert_closed_and_clean(aiofiles_context_manager._obj, path)
 
 
 async def test_open_context_manager__iter__():

@@ -25,12 +25,16 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Operating System :: OS Independent",
     ],
     description="Provides asynchronous temporary files.",
     extras_require={
         "dev": [
             "black",
+            "coveralls",
             "pylint",
             "pytest",
             "pytest-asyncio",

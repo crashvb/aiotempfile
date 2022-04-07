@@ -2,7 +2,7 @@
 
 -include makefile.config
 
-.PHONY: black build clean default deploy deploy-test purge release sign test test-all test-all-verbose test-code test-package test-verbose venv .venv verify
+.PHONY: black build clean default deploy deploy-test purge release sign test test-all test-all-verbose test-code test-coverage test-coverage-verbose test-package test-verbose venv .venv verify
 
 tmpdir:=$(shell mktemp --directory)
 
@@ -49,8 +49,14 @@ test:
 	python -m pytest --log-cli-level info $(args)
 
 test-code:
-	# Note: https://github.com/PyCQA/pylint/issues/289
-	python -m pylint --disable C0330,R0801 --max-line-length=120 aiotempfile tests
+	python -m pylint --max-line-length=120 aiotempfile tests
+
+test-coverage:
+	coverage run --source=aiotempfile -m pytest --log-cli-level=info $(args)
+
+test-coverage-verbose:
+	coverage run --source=aiotempfile -m pytest --log-cli-level=debug $(args)
+	coverage report
 
 test-package: build
 	python -m venv $(tmpdir)

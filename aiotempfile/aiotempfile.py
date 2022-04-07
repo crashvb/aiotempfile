@@ -6,7 +6,6 @@
 
 # ... while we wait for:
 # * https://github.com/Tinche/aiofiles/issues/20
-# * https://github.com/Tinche/aiofiles/pull/56/files
 
 import asyncio
 import atexit
@@ -35,14 +34,12 @@ def deterministic_destructor():
 
     This is needed to cleanup files that are created by awaiting the context manager.
     """
-    global _OBJECTS  # pylint: disable=global-statement
     # Copy the list to allow modification while iterating
     for obj in _OBJECTS[:]:
         try:
             if DEBUG:
                 print(
-                    "AIOTEMPFILE {name: %s, obj: %s, refcount: %d}"
-                    % (obj.name, obj, sys.getrefcount(obj))
+                    f"AIOTEMPFILE {{name: {obj.name}, obj: {obj}, refcount: {sys.getrefcount(obj)}}}"
                 )
             obj.close()
         except Exception:  # pylint: disable=broad-except
@@ -87,7 +84,6 @@ def _open(file, *args, mode="r", loop=None, executor=None, **kwargs):
     obj._original_close = getattr(obj, "close", None)
     obj.close = MethodType(duck_punch_close, obj)
 
-    global _OBJECTS  # pylint: disable=global-statement
     _OBJECTS.append(obj)
     return obj
 
@@ -120,7 +116,6 @@ def duck_punch_close(self):
         ...
 
     try:
-        global _OBJECTS
         _OBJECTS.remove(self)
     except ValueError:
         ...
