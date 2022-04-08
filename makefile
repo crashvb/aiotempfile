@@ -1,10 +1,12 @@
-#! /usr/bin/make -f
+#!/usr/bin/make -f
 
--include makefile.config
+include makefile.config
+-include makefile.config.local
 
 .PHONY: black build clean default deploy deploy-test purge release sign test test-all test-all-verbose test-code test-coverage test-coverage-verbose test-package test-verbose venv .venv verify
 
-tmpdir:=$(shell mktemp --directory)
+package_folder := $(shell sed --expression='s/^.*name="\(.*\)",/\1/p' --quiet setup.py)
+package_name := $(shell sed --expression='s/_/-/g' --expression='s/^.*name="\(.*\)",/\1/p' --quiet setup.py)
 
 default: build
 
@@ -24,7 +26,6 @@ deploy-test: clean build sign
 
 release:
 	@[ "X$(shell git status --porcelain 2>&1)" = "X" ] || (echo "GIT work tree is dirty!" && /bin/false)
-	$(eval package_name := $(shell sed --expression='s/_/-/g' --expression='s/^.*name="\(.*\)",/\1/p' --quiet setup.py))
 	@echo "Detected package: $(package_name)"
 	$(eval version_current := $(shell sed --expression='s/^__version__ = "\(.*\)"/\1/p' --quiet */__init__.py))
 	@echo "Detected current version as: $(version_current)"
@@ -46,10 +47,10 @@ sign:
 	find dist -type f \( -iname "*.tar.gz" -o -iname "*.whl" \) -exec gpg --armor --detach-sig --local-user=$(keyid) --sign {} \;
 
 test:
-	python -m pytest --cov=aiotempfile --cov-report= --log-cli-level info $(args)
+	python -m pytest --cov=$(package_folder) --cov-report= --log-cli-level info $(args)
 
 test-code:
-	python -m pylint --disable=W0511 --max-line-length=120 aiotempfile tests
+	python -m pylint --disable=$(pylint_disable) --max-line-length=120 $(package_folder) tests
 
 test-coverage: test
 	coverage report --fail-under=80
@@ -58,6 +59,7 @@ test-coverage-verbose: test-verbose
 	coverage report --fail-under=80
 
 test-package: build
+	$(eval tmpdir := $(shell mktemp --directory))
 	python -m venv $(tmpdir)
 
 	cd /tmp
@@ -66,7 +68,7 @@ test-package: build
 	rm --force --recursive $(tmpdir)
 
 test-verbose:
-	python -m pytest -r sx --cov=aiotempfile --cov-report= --log-cli-level debug $(args)
+	python -m pytest -r sx --cov=$(package_folder) --cov-report= --log-cli-level debug $(args)
 
 .venv:
 	python -m venv .venv
