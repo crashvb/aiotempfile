@@ -52,7 +52,7 @@ file.close()
 
 | Variable | Default Value | Description |
 | ---------| ------------- | ----------- |
-| AIOTEMPFILE_DEBUG | | Adds additional debug logging.
+| AIOTEMPFILE\_DEBUG | | Adds additional debug logging.
 
 ## Development
 
