@@ -6,4 +6,4 @@
 
 from .aiotempfile import open
 
-__version__ = "0.5.5.dev0"
+__version__ = "0.5.5"
