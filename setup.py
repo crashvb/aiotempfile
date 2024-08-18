@@ -44,7 +44,7 @@ setup(
         ]
     },
     include_package_data=True,
-    install_requires=["aiofiles"],
+    install_requires=["aiofiles<23.2.0"],
     keywords="aio aiotempfile async asynchronous file files temp temporary",
     license="Apache License 2.0",
     long_description=open("README.md", encoding="utf-8").read(),
